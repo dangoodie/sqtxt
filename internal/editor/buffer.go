@@ -6,8 +6,28 @@ type Buffer struct {
 }
 
 // NewBuffer creates a new buffer
-func NewBuffer(data []byte) *Buffer {
-    return &Buffer{data: data}
+func NewBuffer(data []byte) Buffer {
+    return Buffer{
+        data: data,
+    }
 }
-// Add methods to manipulate the buffer
 
+// Read returns the buffer data
+func (b *Buffer) Read() []byte {
+    return b.data
+}
+
+// Write writes data to the buffer
+func (b *Buffer) Write(data []byte) {
+    b.data = data
+}
+
+// Insert inserts data at the specified index
+func (b *Buffer) Insert(i int, data []byte) {
+    b.data = append(b.data[:i], append(data, b.data[i:]...)...)
+}
+
+// Delete deletes data at the specified index
+func (b *Buffer) Delete(i int) {
+    b.data = append(b.data[:i], b.data[i+1:]...)
+}

@@ -14,8 +14,6 @@ type Editor struct {
     buffer Buffer
     cursor int
     filename string
-    //display display
-    //util util
 }
 
 func Start() {
@@ -34,9 +32,12 @@ func Start() {
     }
     // load the file contents into the editor
     editor := Editor{
-        buffer: Buffer{data: data},
+        buffer: NewBuffer(data),
         cursor: 0,
         filename: filename,
     }
+
+    // test to display the buffer contents
+    fmt.Println(string(editor.buffer.Read()))
 }
 
