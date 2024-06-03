@@ -31,3 +31,19 @@ func (b *Buffer) Insert(i int, data []byte) {
 func (b *Buffer) Delete(i int) {
     b.data = append(b.data[:i], b.data[i+1:]...)
 }
+
+// Size returns the size of the buffer
+func (b *Buffer) Size() int {
+    return len(b.data)
+}
+
+func (b *Buffer) GetLine(i int, width int) []byte {
+    start := i * width
+    end := start + width
+
+    if end > len(b.data) {
+        end = len(b.data)
+    }
+
+    return b.data[start:end]
+}

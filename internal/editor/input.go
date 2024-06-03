@@ -1,7 +1,12 @@
 package editor
 
 // HandleInput processes user input
-func HandleInput() {
+type Position struct {
+    x int
+    y int
+}
+
+func (e *Editor)HandleInput(key rune, editor *Editor) {
     // Input handling code here
 }
 

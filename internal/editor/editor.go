@@ -2,22 +2,22 @@ package editor
 
 import (
     "fmt"
-    "io/ioutil"
     "os"
+    "bufio"
 
-    //display "github.com/dangoodie/internal/display"
-    //util "github.com/dangoodie/pkg/util"
+    //util "github.com/dangoodie/sqtxt/pkg/util"
 
 )
 
 type Editor struct {
     buffer Buffer
-    cursor int
+    cursor Position
     filename string
+    size Size
 }
 
 func Start() {
-    //fmt.Println("Starting editor...")
+    fmt.Println("Starting editor...")
 
     if len(os.Args) < 2 {
         fmt.Println("No file specified")
@@ -25,19 +25,41 @@ func Start() {
     }
 
     filename := os.Args[1]
-    data, err := ioutil.ReadFile(filename)
+    data, err := os.ReadFile(filename)
     if err != nil {
         fmt.Println("Error reading file:", err)
         os.Exit(1)
     }
+    
+    // Get the size of the terminal
+    size := GetSize()
+
     // load the file contents into the editor
     editor := Editor{
         buffer: NewBuffer(data),
-        cursor: 0,
+        cursor: Position{0, 0},
         filename: filename,
+        size: size,
     }
+    fmt.Println("Loaded file:", filename)
 
-    // test to display the buffer contents
-    fmt.Println(string(editor.buffer.Read()))
+    editor.Run()
 }
 
+// Run is the main loop of the editor
+func (editor *Editor) Run() {
+    fmt.Println("Running editor...")
+    Init()
+    input := bufio.NewReader(os.Stdin)
+    defer Close()
+
+    for {
+        Render(editor)
+        key, _, err := input.ReadRune()
+        if err != nil {
+            fmt.Println("Error reading input:", err)
+            break
+        }
+        editor.HandleInput(key, editor)
+    }
+}
