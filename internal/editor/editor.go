@@ -19,8 +19,7 @@ func Start() {
     }
 
     filename := os.Args[1]
-
-    data, err := ioutil.ReadFile
+    data, err := ioutil.ReadFile(filename)
     if err != nil {
         fmt.Println("Error reading file:", err)
         os.Exit(1)
