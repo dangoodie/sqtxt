@@ -1,4 +1,4 @@
-package editor
+package buffer
 
 // Buffer represents the text buffer
 type Buffer struct {

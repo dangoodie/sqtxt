@@ -6,14 +6,15 @@ import (
     "bufio"
 
     //util "github.com/dangoodie/sqtxt/pkg/util"
-
+    display "github.com/dangoodie/sqtxt/internal/display"
+    buffer "github.com/dangoodie/sqtxt/internal/buffer"
 )
 
 type Editor struct {
-    buffer Buffer
+    display display.Display
+    buffer buffer.Buffer
     cursor Position
     filename string
-    size Size
 }
 
 func Start() {
@@ -31,15 +32,13 @@ func Start() {
         os.Exit(1)
     }
     
-    // Get the size of the terminal
-    size := GetSize()
 
     // load the file contents into the editor
     editor := Editor{
-        buffer: NewBuffer(data),
+        buffer: buffer.NewBuffer(data),
         cursor: Position{0, 0},
         filename: filename,
-        size: size,
+        display: display.NewDisplay(),
     }
     fmt.Println("Loaded file:", filename)
 
@@ -47,19 +46,24 @@ func Start() {
 }
 
 // Run is the main loop of the editor
-func (editor *Editor) Run() {
+func (e *Editor) Run() {
     fmt.Println("Running editor...")
-    Init()
+    display.Init()
     input := bufio.NewReader(os.Stdin)
-    defer Close()
+    defer e.Close()
 
     for {
-        Render(editor)
+        e.display.Render(e.buffer)
         key, _, err := input.ReadRune()
         if err != nil {
             fmt.Println("Error reading input:", err)
             break
         }
-        editor.HandleInput(key, editor)
+        e.HandleInput(key, e)
     }
+}
+
+func (editor *Editor) Close() {
+    fmt.Println("Closing editor...")
+    os.Exit(0)
 }
