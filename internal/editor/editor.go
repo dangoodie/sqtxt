@@ -1,13 +1,13 @@
 package editor
 
 import (
-    "fmt"
-    "os"
-    "bufio"
+	"bufio"
+	"fmt"
+	"os"
 
-    //util "github.com/dangoodie/sqtxt/pkg/util"
-    display "github.com/dangoodie/sqtxt/internal/display"
-    buffer "github.com/dangoodie/sqtxt/internal/buffer"
+	//util "github.com/dangoodie/sqtxt/pkg/util"
+	buffer "github.com/dangoodie/sqtxt/internal/buffer"
+	display "github.com/dangoodie/sqtxt/internal/display"
 )
 
 type Editor struct {
@@ -50,7 +50,7 @@ func (e *Editor) Run() {
     fmt.Println("Running editor...")
     display.Init()
     input := bufio.NewReader(os.Stdin)
-    defer e.Close()
+    defer Close()
 
     for {
         e.display.Render(e.buffer)
@@ -63,7 +63,8 @@ func (e *Editor) Run() {
     }
 }
 
-func (editor *Editor) Close() {
+func Close() {
     fmt.Println("Closing editor...")
+    display.Close()
     os.Exit(0)
 }

@@ -18,9 +18,12 @@ func NewDisplay() Display {
 // Render renders the current state of the editor to the screen
 func (d *Display) Render(buffer buffer.Buffer) {
 	fmt.Print("\033[2J") // Clear the screen
+
+    
 	lines := strings.Split(string(buffer.Read()), "\n")
     
     for _, line := range lines {
-        fmt.Println(line)
+        fmt.Print(line)
+        fmt.Print("\033[0E") // move to the beginning of next line
     }
 }

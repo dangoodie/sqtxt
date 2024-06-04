@@ -6,6 +6,7 @@ import (
     "os"
 )
 
+var PREVSTATE term.State
 
 type Size struct {
     width int
@@ -23,7 +24,7 @@ func Init() {
 
 
     // Hide the cursor
-    fmt.Print("\033[?25l")
+    //fmt.Print("\033[?25l")
     // Clear the screen
     fmt.Print("\033[2J")
     // Move the cursor to the top-left corner
@@ -36,12 +37,15 @@ func Init() {
         os.Exit(1)
     }
 
-    _ = oldState
+    PREVSTATE = *oldState 
 }
 
 func Close() {
     // Show the cursor
     fmt.Print("\033[?25h")
+
+    // Set the terminal to it's previous state
+    term.Restore(int(os.Stdin.Fd()), &PREVSTATE)
 }
 
 func GetSize() Size {
