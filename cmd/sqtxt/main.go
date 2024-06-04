@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/dangoodie/sqtxt/internal/editor"
+    editor "github.com/dangoodie/sqtxt/internal/editor"
 )
 
 func main() {
