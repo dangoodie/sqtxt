@@ -6,8 +6,8 @@ type Buffer struct {
 }
 
 // NewBuffer creates a new buffer
-func NewBuffer(data []byte) Buffer {
-    return Buffer{
+func NewBuffer(data []byte) *Buffer {
+    return &Buffer{
         data: data,
     }
 }

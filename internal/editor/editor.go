@@ -1,23 +1,20 @@
 package editor
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 
 	//util "github.com/dangoodie/sqtxt/pkg/util"
 	buffer "github.com/dangoodie/sqtxt/internal/buffer"
-	display "github.com/dangoodie/sqtxt/internal/display"
 )
 
 type Editor struct {
-    display display.Display
-    buffer buffer.Buffer
-    cursor Position
-    filename string
+    Buffer *buffer.Buffer
+    Cursor Position
+    Filename string
 }
 
-func Start() {
+func Start() Editor {
     fmt.Println("Starting editor...")
 
     if len(os.Args) < 2 {
@@ -35,36 +32,29 @@ func Start() {
 
     // load the file contents into the editor
     editor := Editor{
-        buffer: buffer.NewBuffer(data),
-        cursor: Position{0, 0},
-        filename: filename,
-        display: display.NewDisplay(),
+        Buffer: buffer.NewBuffer(data),
+        Cursor: Position{0, 0},
+        Filename: filename,
     }
     fmt.Println("Loaded file:", filename)
 
-    editor.Run()
+    return editor
 }
 
 // Run is the main loop of the editor
-func (e *Editor) Run() {
-    fmt.Println("Running editor...")
-    display.Init()
-    input := bufio.NewReader(os.Stdin)
-    defer Close()
+//func (e *Editor) Run() {
+//    fmt.Println("Running editor...")
+//    display.Start()
+//    input := bufio.NewReader(os.Stdin)
+//
+//    for {
+//        e.display.Render(e.buffer)
+//        key, _, err := input.ReadRune()
+//        if err != nil {
+//            fmt.Println("Error reading input:", err)
+//            break
+//        }
+//        e.HandleInput(key, e)
+//    }
+//}
 
-    for {
-        e.display.Render(e.buffer)
-        key, _, err := input.ReadRune()
-        if err != nil {
-            fmt.Println("Error reading input:", err)
-            break
-        }
-        e.HandleInput(key, e)
-    }
-}
-
-func Close() {
-    fmt.Println("Closing editor...")
-    display.Close()
-    os.Exit(0)
-}
