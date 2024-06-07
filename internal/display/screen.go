@@ -13,10 +13,12 @@ func Start(e editor.Editor) {
 	// Code to initialize the screen
 	fmt.Println("Initializing screen...")
 	app := app.New()
-	window := app.NewWindow("Hello")
+    title := fmt.Sprintf("sqtxt - %s", e.Filename)
+	window := app.NewWindow(title)
 
-	content := fmt.Sprintf("Filename: %s\nBuffer: %s", e.Filename, string(e.Buffer.Read()))
+	content := string(e.Buffer.Read())
 	text := widget.NewLabel(content)
+    text.TextStyle.Monospace = true
 
 	window.SetContent(text)
 	window.ShowAndRun()
