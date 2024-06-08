@@ -1,11 +1,11 @@
 package main
 
 import (
-    editor "github.com/dangoodie/sqtxt/internal/editor"
-    display "github.com/dangoodie/sqtxt/internal/display"
+	display "github.com/dangoodie/sqtxt/internal/display"
+	editor "github.com/dangoodie/sqtxt/internal/editor"
 )
 
 func main() {
-    e := editor.Start()
-    display.Start(e)
+	e := editor.Start()
+	display.Start(e)
 }
