@@ -3,6 +3,7 @@ package display
 import (
 	"fmt"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/widget"
 	editor "github.com/dangoodie/sqtxt/internal/editor"
@@ -21,5 +22,11 @@ func Start(e editor.Editor) {
 	text.TextStyle.Monospace = true
 
 	window.SetContent(text)
+	window.Canvas().SetOnTypedRune(func(r rune) {
+		e.HandleInput(r)
+	})
+
+	// Code to run the screen
+	window.Resize(fyne.NewSize(800, 600))
 	window.ShowAndRun()
 }

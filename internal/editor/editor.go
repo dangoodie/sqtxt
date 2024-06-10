@@ -41,20 +41,3 @@ func Start() Editor {
     return editor
 }
 
-// Run is the main loop of the editor
-//func (e *Editor) Run() {
-//    fmt.Println("Running editor...")
-//    display.Start()
-//    input := bufio.NewReader(os.Stdin)
-//
-//    for {
-//        e.display.Render(e.buffer)
-//        key, _, err := input.ReadRune()
-//        if err != nil {
-//            fmt.Println("Error reading input:", err)
-//            break
-//        }
-//        e.HandleInput(key, e)
-//    }
-//}
-
