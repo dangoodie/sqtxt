@@ -1,24 +1,31 @@
 package editor
 
 import (
-    "fmt"
+	"fmt"
 )
 
-func (e *Editor)HandleInput(key rune) {
-    switch key {
-        case 37: // Left arrow
-            e.Cursor.Row--
-        case 38: // Up arrow
-            e.Cursor.Col--
-        case 39: // Right arrow
-            e.Cursor.Row++
-        case 40: // Down arrow  
-            e.Cursor.Col++
-
-        default:
-            fmt.Println("Key pressed:", key)
-            e.Buffer.Insert(e.Cursor, []byte{byte(key)})
-            e.Cursor.Col++
-    }
+func (e *Editor) HandleKeyInput(key string) {
+	switch key {
+	case "Escape":
+		fmt.Println("Escape key pressed")
+		e.Quit()
+	case "Left": // Left arrow
+		fmt.Println("Left arrow")
+		e.Cursor.Col--
+	case "Up": // Up arrow
+		fmt.Println("Up arrow")
+		e.Cursor.Row--
+	case "Right": // Right arrow
+		fmt.Println("Right arrow")
+		e.Cursor.Col++
+	case "Down": // Down arrow
+		fmt.Println("Down arrow")
+        e.Cursor.Row++
+	}
 }
 
+func (e *Editor) HandleRuneInput(r rune) {
+	e.Buffer.Insert(e.Cursor, []byte(string(r)))
+	e.Cursor.Col++
+	fmt.Println("Rune pressed:", string(r))
+}

@@ -4,6 +4,7 @@ import (
 	"image/color"
 
 	structs "github.com/dangoodie/sqtxt/internal/structs"
+    util "github.com/dangoodie/sqtxt/pkg/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -13,19 +14,16 @@ type Caret struct {
 	*canvas.Rectangle
 }
 
-// ROW_HEIGHT and COL_WIDTH are the dimensions of the caret
-const (
-	ROW_HEIGHT = 20
-	COL_WIDTH  = 10
-)
-
 func NewCaret(p structs.Position) *Caret {
+	// Get the configuration
+	cfg := util.GetConfig()
+
 	c := &Caret{
 		Rectangle: canvas.NewRectangle(&color.RGBA{255, 0, 0, 255}), // red for now
 	}
 
 	c.Rectangle.Move(convertPositionToScreen(p))
-	c.Resize(fyne.Size{Height: float32(ROW_HEIGHT), Width: float32(COL_WIDTH)})
+	c.Resize(fyne.Size{Height: float32(cfg.RowHeight), Width: float32(cfg.ColWidth)})
 
 	return c
 }
@@ -35,8 +33,11 @@ func (c *Caret) Move(p structs.Position) {
 }
 
 func convertPositionToScreen(p structs.Position) fyne.Position {
-	row := float32(p.Row * ROW_HEIGHT)
-	col := float32(p.Col * COL_WIDTH)
+	// Get the configuration
+	cfg := util.GetConfig()
 
-	return fyne.NewPos(row, col)
+	row := float32(p.Row * cfg.RowHeight)
+	col := float32(p.Col * cfg.ColWidth)
+
+	return fyne.NewPos(col, row)
 }

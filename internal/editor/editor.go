@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	//util "github.com/dangoodie/sqtxt/pkg/util"
 	buffer "github.com/dangoodie/sqtxt/internal/buffer"
-    structs "github.com/dangoodie/sqtxt/internal/structs"
+	structs "github.com/dangoodie/sqtxt/internal/structs"
 )
 
 type Editor struct {
@@ -39,4 +38,9 @@ func Start() Editor {
 	fmt.Println("Loaded file:", filename)
 
 	return editor
+}
+
+func (e *Editor) Quit() {
+	fmt.Println("Quitting...")
+	os.Exit(0)
 }
