@@ -1,35 +1,70 @@
 package buffer
 
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+
+    structs "github.com/dangoodie/sqtxt/internal/structs"
+)
+
 // Buffer represents the text buffer
 type Buffer struct {
-	data []byte
+	data [][]byte
 }
 
 // NewBuffer creates a new buffer
 func NewBuffer(data []byte) *Buffer {
-	return &Buffer{
-		data: data,
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	b := &Buffer{}
+	for scanner.Scan() {
+		line := scanner.Bytes()
+		b.data = append(b.data, line)
 	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error reading buffer:", err)
+		panic(err)
+	}
+
+	return b
 }
 
 // Read returns the buffer data
-func (b *Buffer) Read() []byte {
-	return b.data
-}
-
-// Write writes data to the buffer
-func (b *Buffer) Write(data []byte) {
-	b.data = data
+func (b *Buffer) Read() [][]byte {
+    return b.data
 }
 
 // Insert inserts data at the specified index
-func (b *Buffer) Insert(i int, data []byte) {
-	b.data = append(b.data[:i], append(data, b.data[i:]...)...)
+func (b *Buffer) Insert(p structs.Position, data []byte) {
+	row := p.Row
+	col := p.Col
+
+	if row < 0 || row > len(b.data) {
+		return
+	}
+
+	if col < 0 || col > len(b.data[row]) {
+		return
+	}
+
+	b.data[row] = append(b.data[row][:col], append(data, b.data[row][col:]...)...)
 }
 
 // Delete deletes data at the specified index
-func (b *Buffer) Delete(i int) {
-	b.data = append(b.data[:i], b.data[i+1:]...)
+func (b *Buffer) Delete(p structs.Position) {
+	row := p.Row
+	col := p.Col
+
+	if row < 0 || row > len(b.data) {
+		return
+	}
+
+	if col < 0 || col > len(b.data[row]) {
+		return
+	}
+
+	b.data[row] = append(b.data[row][:col], b.data[row][col+1:]...)
 }
 
 // Size returns the size of the buffer
@@ -37,13 +72,15 @@ func (b *Buffer) Size() int {
 	return len(b.data)
 }
 
-func (b *Buffer) GetLine(i int, width int) []byte {
-	start := i * width
-	end := start + width
-
-	if end > len(b.data) {
-		end = len(b.data)
+func (b *Buffer) GetLine(r int, width int) []byte {
+	if r < 0 || r >= len(b.data) {
+		return nil
 	}
 
-	return b.data[start:end]
+	line := b.data[r]
+	if len(line) > width {
+		return line[:width]
+	}
+
+	return line
 }
