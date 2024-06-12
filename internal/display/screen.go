@@ -2,54 +2,32 @@ package display
 
 import (
 	"fmt"
-	"image/color"
-
-    util "github.com/dangoodie/sqtxt/pkg/util"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	editor "github.com/dangoodie/sqtxt/internal/editor"
 )
 
-
 type Screen struct {
 	editor    *editor.Editor
-	caret     *Caret
-	textObj   []*canvas.Text
 	container *fyne.Container
+	textGrid  *widget.TextGrid
 }
 
 func NewScreen(e *editor.Editor) *Screen {
 	s := &Screen{
-		editor: e,
-		caret:  NewCaret(e.Cursor),
+		editor:    e,
+		container: container.NewVBox(),
+        textGrid: widget.NewTextGridFromString(e.Buffer.Read()),
 	}
-	s.loadText()
-	cObj := []fyne.CanvasObject{}
-	cObj = append(cObj, s.caret.Rectangle)
-	for _, text := range s.textObj {
-		cObj = append(cObj, text)
-	}
-	s.container = container.NewWithoutLayout(cObj...)
+
+	s.textGrid.ShowLineNumbers = true
+	s.textGrid.SetStyle(e.Cursor.Row, e.Cursor.Col, CaretStyle{})
+	s.container.Add(s.textGrid)
 
 	return s
-}
-
-func (s *Screen) loadText() {
-    // get configuration
-    cfg := util.GetConfig()
-
-	s.textObj = []*canvas.Text{}
-	for i, line := range s.editor.Buffer.Read() {
-		text := canvas.NewText(string(line), color.White)
-		text.TextStyle.Monospace = true
-        text.TextSize = float32(cfg.FontSize)
-
-		text.Move(fyne.NewPos(0, float32(i*cfg.RowHeight)))
-		s.textObj = append(s.textObj, text)
-	}
 }
 
 // InitializeScreen sets up the terminal screen
@@ -65,15 +43,13 @@ func Start(e editor.Editor) {
 	window.SetContent(screen.container)
 	window.Canvas().SetOnTypedKey(func(ev *fyne.KeyEvent) { // This is the event handler for key presses
 		e.HandleKeyInput(string(ev.Name))
-		screen.loadText()
-		screen.caret.Move(e.Cursor)
+        screen.textGrid.SetText(e.Buffer.Read())
 		screen.container.Refresh()
 	})
 
 	window.Canvas().SetOnTypedRune(func(r rune) { // This is the event handler for typing characters
 		e.HandleRuneInput(r)
-		screen.loadText()
-		screen.caret.Move(e.Cursor)
+        screen.textGrid.SetText(e.Buffer.Read())
 		screen.container.Refresh()
 	})
 

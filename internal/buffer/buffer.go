@@ -31,8 +31,13 @@ func NewBuffer(data []byte) *Buffer {
 }
 
 // Read returns the buffer data
-func (b *Buffer) Read() [][]byte {
-    return b.data
+func (b *Buffer) Read() string {
+    var buf bytes.Buffer
+    for _, line := range b.data {
+        buf.Write(line)
+        buf.WriteByte('\n')
+    }
+    return buf.String()
 }
 
 // Insert inserts data at the specified index
