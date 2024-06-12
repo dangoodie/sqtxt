@@ -36,23 +36,31 @@ func Start(e editor.Editor) {
 	fmt.Println("Initializing screen...")
 	app := app.New()
 	title := "sqtxt - " + e.Filename
-	window := app.NewWindow(title)
+	w := app.NewWindow(title)
 
-	screen := NewScreen(&e)
+	s := NewScreen(&e)
 
-	window.SetContent(screen.container)
-	window.Canvas().SetOnTypedKey(func(ev *fyne.KeyEvent) { // This is the event handler for key presses
+	w.SetContent(s.container)
+	w.Canvas().SetOnTypedKey(func(ev *fyne.KeyEvent) { // This is the event handler for key presses
 		e.HandleKeyInput(string(ev.Name))
-        screen.textGrid.SetText(e.Buffer.Read())
-		screen.container.Refresh()
+        s.textGrid.SetText(e.Buffer.Read())
+        s.UpdateCaret()
+		s.container.Refresh()
 	})
 
-	window.Canvas().SetOnTypedRune(func(r rune) { // This is the event handler for typing characters
+	w.Canvas().SetOnTypedRune(func(r rune) { // This is the event handler for typing characters
 		e.HandleRuneInput(r)
-        screen.textGrid.SetText(e.Buffer.Read())
-		screen.container.Refresh()
+        s.textGrid.SetText(e.Buffer.Read())
+        s.UpdateCaret()
+		s.container.Refresh()
 	})
 
-	window.Resize(fyne.NewSize(800, 600))
-	window.ShowAndRun()
+	w.Resize(fyne.NewSize(800, 600))
+    w.Show()
+    app.Run()
+}
+
+// UpdateCaret updates the position of the caret on the screen
+func (s *Screen) UpdateCaret() {
+    s.textGrid.SetStyle(s.editor.Cursor.Row, s.editor.Cursor.Col, CaretStyle{})
 }
