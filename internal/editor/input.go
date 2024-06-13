@@ -6,8 +6,8 @@ import (
 )
 
 type Cursor struct {
-	curCol int
-	Position  structs.Position
+	curCol   int
+	Position structs.Position
 }
 
 // NewCursor creates a new cursor
@@ -53,7 +53,7 @@ func (e *Editor) CursorUp() {
 		e.Cursor.Position.Row--
 	}
 
-    e.Cursor.Position.Col = e.Cursor.curCol
+	e.Cursor.Position.Col = e.Cursor.curCol
 
 	if e.Cursor.Position.Col > e.Buffer.LineLength(e.Cursor.Position.Row) {
 		e.Cursor.Position.Col = e.Buffer.LineLength(e.Cursor.Position.Row)
@@ -62,8 +62,6 @@ func (e *Editor) CursorUp() {
 	if e.Cursor.Position.Col < 0 {
 		e.Cursor.Position.Col = 0
 	}
-
-
 }
 
 // CursorDown moves the cursor down
@@ -72,7 +70,7 @@ func (e *Editor) CursorDown() {
 		e.Cursor.Position.Row++
 	}
 
-    e.Cursor.Position.Col = e.Cursor.curCol
+	e.Cursor.Position.Col = e.Cursor.curCol
 
 	if e.Cursor.Position.Col > e.Buffer.LineLength(e.Cursor.Position.Row) {
 		e.Cursor.Position.Col = e.Buffer.LineLength(e.Cursor.Position.Row)
@@ -89,7 +87,7 @@ func (e *Editor) CursorLeft() {
 		e.Cursor.Position.Col--
 	}
 
-    e.Cursor.curCol = e.Cursor.Position.Col
+	e.Cursor.curCol = e.Cursor.Position.Col
 }
 
 // CursorRight moves the cursor right
@@ -98,6 +96,5 @@ func (e *Editor) CursorRight() {
 		e.Cursor.Position.Col++
 	}
 
-    e.Cursor.curCol = e.Cursor.Position.Col
+	e.Cursor.curCol = e.Cursor.Position.Col
 }
-
