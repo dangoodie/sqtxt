@@ -24,7 +24,10 @@ func NewScreen(e *editor.Editor) *Screen {
 	}
 
 	s.textGrid.ShowLineNumbers = true
-	s.textGrid.SetStyle(e.Cursor.Row, e.Cursor.Col, CaretStyle{})
+
+    // Set the caret style
+    x, y := e.Cursor.GetPosition()
+	s.textGrid.SetStyle(x, y, CaretStyle{})
 	s.container.Add(s.textGrid)
 
 	return s
@@ -62,5 +65,6 @@ func Start(e editor.Editor) {
 
 // UpdateCaret updates the position of the caret on the screen
 func (s *Screen) UpdateCaret() {
-    s.textGrid.SetStyle(s.editor.Cursor.Row, s.editor.Cursor.Col, CaretStyle{})
+    x, y := s.editor.Cursor.GetPosition()
+    s.textGrid.SetStyle(x, y, CaretStyle{})
 }

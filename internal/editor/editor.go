@@ -5,12 +5,11 @@ import (
 	"os"
 
 	buffer "github.com/dangoodie/sqtxt/internal/buffer"
-	structs "github.com/dangoodie/sqtxt/internal/structs"
 )
 
 type Editor struct {
 	Buffer   *buffer.Buffer
-	Cursor   structs.Position
+	Cursor   Cursor
 	Filename string
 }
 
@@ -32,7 +31,7 @@ func Start() Editor {
 	// load the file contents into the editor
 	editor := Editor{
 		Buffer:   buffer.NewBuffer(data),
-		Cursor:   structs.Position{0, 0},
+		Cursor:   NewCursor(),
 		Filename: filename,
 	}
 	fmt.Println("Loaded file:", filename)

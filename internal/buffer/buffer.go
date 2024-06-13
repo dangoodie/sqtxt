@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 
-    structs "github.com/dangoodie/sqtxt/internal/structs"
+	structs "github.com/dangoodie/sqtxt/internal/structs"
 )
 
 // Buffer represents the text buffer
@@ -32,12 +32,12 @@ func NewBuffer(data []byte) *Buffer {
 
 // Read returns the buffer data
 func (b *Buffer) Read() string {
-    var buf bytes.Buffer
-    for _, line := range b.data {
-        buf.Write(line)
-        buf.WriteByte('\n')
-    }
-    return buf.String()
+	var buf bytes.Buffer
+	for _, line := range b.data {
+		buf.Write(line)
+		buf.WriteByte('\n')
+	}
+	return buf.String()
 }
 
 // Insert inserts data at the specified index
@@ -45,29 +45,27 @@ func (b *Buffer) Insert(p structs.Position, data []byte) {
 	row := p.Row
 	col := p.Col
 
-	if row < 0 || row > len(b.data) {
-		return
+	if len(b.data) == 0 {
+		b.data = append(b.data, []byte{})
 	}
 
-	if col < 0 || col > len(b.data[row]) {
-		return
+	if row >= len(b.data) {
+		b.data = append(b.data, []byte{})
 	}
 
-	b.data[row] = append(b.data[row][:col], append(data, b.data[row][col:]...)...)
+	if col >= len(b.data[row]) {
+		b.data[row] = append(b.data[row], data...)
+	} else {
+		b.data[row] = append(b.data[row][:col], append(data, b.data[row][col:]...)...)
+	}
+
+	// fmt.Println("Buffer data:", b.data)
 }
 
 // Delete deletes data at the specified index
 func (b *Buffer) Delete(p structs.Position) {
 	row := p.Row
 	col := p.Col
-
-	if row < 0 || row > len(b.data) {
-		return
-	}
-
-	if col < 0 || col > len(b.data[row]) {
-		return
-	}
 
 	b.data[row] = append(b.data[row][:col], b.data[row][col+1:]...)
 }
@@ -77,15 +75,12 @@ func (b *Buffer) Size() int {
 	return len(b.data)
 }
 
-func (b *Buffer) GetLine(r int, width int) []byte {
-	if r < 0 || r >= len(b.data) {
-		return nil
-	}
+// LineLength returns the length of a line
+func (b *Buffer) LineLength(row int) int {
+	return len(b.data[row])
+}
 
-	line := b.data[r]
-	if len(line) > width {
-		return line[:width]
-	}
-
-	return line
+// NumLines returns the height of the buffer
+func (b *Buffer) NumLines() int {
+	return len(b.data)
 }
