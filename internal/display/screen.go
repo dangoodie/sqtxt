@@ -1,60 +1,70 @@
 package display
 
 import (
-    "fmt"
-    "golang.org/x/term"
-    "os"
+	"fmt"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
+	editor "github.com/dangoodie/sqtxt/internal/editor"
 )
 
-var PREVSTATE term.State
+type Screen struct {
+	editor    *editor.Editor
+	container *fyne.Container
+	textGrid  *widget.TextGrid
+}
 
-type Size struct {
-    width int
-    height int
+func NewScreen(e *editor.Editor) *Screen {
+	s := &Screen{
+		editor:    e,
+		container: container.NewVBox(),
+        textGrid: widget.NewTextGridFromString(e.Buffer.Read()),
+	}
+
+	s.textGrid.ShowLineNumbers = true
+
+    // Set the caret style
+    x, y := e.Cursor.GetPosition()
+	s.textGrid.SetStyle(x, y, CaretStyle{})
+	s.container.Add(s.textGrid)
+
+	return s
 }
 
 // InitializeScreen sets up the terminal screen
-func Init() {
-    // Code to initialize the screen
-    // Check if the terminal supports ANSI escape codes
-    if !term.IsTerminal(int(os.Stdout.Fd())) {
-        fmt.Println("Terminal does not support ANSI escape codes")
-        os.Exit(1)
-    }
+func Start(e editor.Editor) {
+	// Code to initialize the screen
+	fmt.Println("Initializing screen...")
+	app := app.New()
+	title := "sqtxt - " + e.Filename
+	w := app.NewWindow(title)
 
+	s := NewScreen(&e)
 
-    // Hide the cursor
-    //fmt.Print("\033[?25l")
-    // Clear the screen
-    fmt.Print("\033[2J")
-    // Move the cursor to the top-left corner
-    fmt.Print("\033[H")
+	w.SetContent(s.container)
+	w.Canvas().SetOnTypedKey(func(ev *fyne.KeyEvent) { // This is the event handler for key presses
+		e.HandleKeyInput(string(ev.Name))
+        s.textGrid.SetText(e.Buffer.Read())
+        s.UpdateCaret()
+		s.container.Refresh()
+	})
 
-    // Set the terminal to raw mode
-    oldState, err := term.MakeRaw(int(os.Stdin.Fd()))
-    if err != nil {
-        fmt.Println("Error setting terminal to raw mode:", err)
-        os.Exit(1)
-    }
+	w.Canvas().SetOnTypedRune(func(r rune) { // This is the event handler for typing characters
+		e.HandleRuneInput(r)
+        s.textGrid.SetText(e.Buffer.Read())
+        s.UpdateCaret()
+		s.container.Refresh()
+	})
 
-    PREVSTATE = *oldState 
+	w.Resize(fyne.NewSize(800, 600))
+    w.Show()
+    app.Run()
 }
 
-func Close() {
-    // Show the cursor
-    fmt.Print("\033[?25h")
-
-    // Set the terminal to it's previous state
-    term.Restore(int(os.Stdin.Fd()), &PREVSTATE)
-}
-
-func GetSize() Size {
-    // Get the size of the terminal
-    width, height, err := term.GetSize(int(os.Stdout.Fd()))
-    if err != nil {
-        fmt.Println("Error getting terminal size:", err)
-        os.Exit(1)
-    }
-
-    return Size{width, height}
+// UpdateCaret updates the position of the caret on the screen
+func (s *Screen) UpdateCaret() {
+    x, y := s.editor.Cursor.GetPosition()
+    s.textGrid.SetStyle(x, y, CaretStyle{})
 }
