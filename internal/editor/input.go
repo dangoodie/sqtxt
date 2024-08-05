@@ -33,9 +33,17 @@ func (e *Editor) HandleKeyInput(key string) {
 		e.CursorDown()
 	case "BackSpace":
 		x, y := e.Cursor.GetPosition()
-		delPos := structs.Position{x, y - 1}
-		e.Buffer.Delete(delPos)
-		e.CursorLeft()
+        if y > 0 {
+            delPos := structs.Position{x, y - 1}
+            e.Buffer.Delete(delPos)
+            e.CursorLeft()
+        } else if x > 0 {
+            // Handle case where backspace merges lines
+            prevLineLen := e.Buffer.LineLength(x - 1)
+            e.Buffer.Delete(structs.Position{x - 1, prevLineLen})
+            e.Cursor.Position.Row--
+            e.Cursor.Position.Col = prevLineLen
+        }
 	default:
 		fmt.Println("Unknown key:", key)
 	}

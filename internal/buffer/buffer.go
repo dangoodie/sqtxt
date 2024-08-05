@@ -16,7 +16,9 @@ type Buffer struct {
 // NewBuffer creates a new buffer
 func NewBuffer(data []byte) *Buffer {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
-	b := &Buffer{}
+	b := &Buffer{
+		data: [][]byte{},
+	}
 	for scanner.Scan() {
 		line := scanner.Bytes()
 		b.data = append(b.data, line)
@@ -45,27 +47,33 @@ func (b *Buffer) Insert(p structs.Position, data []byte) {
 	row := p.Row
 	col := p.Col
 
-	if len(b.data) == 0 {
+	for len(b.data) <= row {
 		b.data = append(b.data, []byte{})
 	}
 
-	if row >= len(b.data) {
-		b.data = append(b.data, []byte{})
+	if col > len(b.data[row]) {
+		col = len(b.data[row])
 	}
 
-	if col >= len(b.data[row]) {
-		b.data[row] = append(b.data[row], data...)
-	} else {
-		b.data[row] = append(b.data[row][:col], append(data, b.data[row][col:]...)...)
-	}
+	line := b.data[row]
+	before := make([]byte, col)
+    copy(before, line[:col])
+    after := make([]byte, len(line) - col)
+    copy(after, line[col:])
 
-	// fmt.Println("Buffer data:", b.data)
+	newLine := append(before, append(data, after...)...)
+
+	b.data[row] = newLine
 }
 
 // Delete deletes data at the specified index
 func (b *Buffer) Delete(p structs.Position) {
 	row := p.Row
 	col := p.Col
+
+	if row >= len(b.data) || col >= len(b.data[row]) {
+		return
+	}
 
 	b.data[row] = append(b.data[row][:col], b.data[row][col+1:]...)
 }
@@ -77,6 +85,9 @@ func (b *Buffer) Size() int {
 
 // LineLength returns the length of a line
 func (b *Buffer) LineLength(row int) int {
+	if row >= len(b.data) {
+		return 0
+	}
 	return len(b.data[row])
 }
 

@@ -67,4 +67,5 @@ func Start(e editor.Editor) {
 func (s *Screen) UpdateCaret() {
     x, y := s.editor.Cursor.GetPosition()
     s.textGrid.SetStyle(x, y, CaretStyle{})
+    s.textGrid.Refresh()
 }
